@@ -4,6 +4,12 @@ param (
     [int]$StyleId = 20
 )
 
+if ([string]::IsNullOrWhiteSpace($ApiKey) -or $ApiKey -eq "YOUR_SKYBOX_API_KEY") {
+    $errorObj = @{ error = "Invalid or missing API Key" }
+    $errorObj | ConvertTo-Json
+    exit 1
+}
+
 $url = "https://backend.blockadelabs.com/api/v1/skybox?api_key=$ApiKey"
 $body = @{
     prompt = $Prompt
@@ -14,5 +20,15 @@ try {
     $response = Invoke-RestMethod -Uri $url -Method Post -Body $body -ContentType "application/json"
     $response | ConvertTo-Json
 } catch {
-    Write-Error "Failed to initiate Skybox generation: $_"
+    $status = $_.Exception.Response.StatusCode.value__
+    $details = $_.ErrorDetails.Message
+    if (-not $details) { $details = $_.Exception.Message }
+    
+    $errorObj = @{ 
+        error = "Failed to initiate Skybox generation"
+        status = $status
+        details = $details
+    }
+    $errorObj | ConvertTo-Json
+    exit 1
 }
