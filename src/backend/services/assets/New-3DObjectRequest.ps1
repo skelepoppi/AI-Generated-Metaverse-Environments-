@@ -3,6 +3,16 @@ param (
     [string]$Model = "shap-e"
 )
 
+if ([string]::IsNullOrWhiteSpace($Prompt)) {
+    @{ error = "Prompt cannot be empty" } | ConvertTo-Json
+    exit 1
+}
+
+if ($Prompt.Length -lt 3) {
+    @{ error = "Prompt is too short" } | ConvertTo-Json
+    exit 1
+}
+
 $PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $ConfigFile = Join-Path $PSScriptRoot "..\..\config.json"
 
