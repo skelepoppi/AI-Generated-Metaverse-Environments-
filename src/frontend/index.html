@@ -11,7 +11,12 @@
         <h1>PromptSpace</h1>
         <p>Generate your 3D Metaverse environment using Stacks & AI</p>
 
-        <div class="generator-box">
+        <div class="tabs">
+            <button id="tab-world" class="tab-btn active">World</button>
+            <button id="tab-assets" class="tab-btn">Assets</button>
+        </div>
+
+        <div id="world-generator" class="generator-box">
             <div class="input-group">
                 <label for="prompt">Environment Prompt</label>
                 <textarea id="prompt" placeholder="Describe your dream virtual world..."></textarea>
@@ -28,6 +33,23 @@
             </div>
 
             <button id="generate-btn">Generate Environment</button>
+        </div>
+
+        <div id="asset-generator" class="generator-box hidden">
+            <div class="input-group">
+                <label for="asset-prompt">Object Prompt</label>
+                <textarea id="asset-prompt" placeholder="A medieval sword, a wooden chair, etc..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="asset-model">AI Model</label>
+                <select id="asset-model">
+                    <option value="shap-e">Shap-E (High Quality)</option>
+                    <option value="point-e">Point-E (Fast)</option>
+                </select>
+            </div>
+
+            <button id="generate-asset-btn">Generate 3D Object</button>
         </div>
 
         <div id="status-container" class="hidden">
