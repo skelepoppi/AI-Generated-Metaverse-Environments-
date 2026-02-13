@@ -55,7 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Asset Generation Flow
+    /**
+     * Handles the 3D asset generation lifecycle:
+     * 1. Validate prompt
+     * 2. Initiate request via Bridge/PowerShell
+     * 3. Start polling for results
+     */
     generateAssetBtn.addEventListener('click', async () => {
         const prompt = assetPromptInput.value.trim();
         const model = assetModelSelect.value;
