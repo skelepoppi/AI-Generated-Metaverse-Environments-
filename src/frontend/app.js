@@ -137,6 +137,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     }
 
+    function startAssetPolling(id) {
+        pollingInterval = setInterval(async () => {
+            try {
+                const response = await callPowerShell('assets/Get-3DObjectStatus.ps1', { Id: id });
+                
+                if (response.status === 'complete') {
+                    stopPolling();
+                    showAssetResult(response);
+                } else if (response.status === 'failed') {
+                    stopPolling();
+                    alert('Asset generation failed.');
+                    statusContainer.classList.add('hidden');
+                    generateAssetBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error('Asset polling error:', err);
+            }
+        }, 5000);
+    }
+
     function stopPolling() {
         clearInterval(pollingInterval);
     }
@@ -167,6 +187,24 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             downloadLink.innerText = 'Download GLB';
         }
+    }
+
+    function showAssetResult(data) {
+        statusContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+        generateAssetBtn.disabled = false;
+        
+        // Reset viewer state
+        threeViewer.classList.add('hidden');
+        resultImage.classList.remove('hidden');
+        view3dBtn.innerText = 'View in 3D Explorer';
+
+        resultImage.src = data.thumbnail_url;
+        downloadLink.href = data.file_url;
+        currentSkyboxUrl = ''; // Reset for now
+
+        view3dBtn.classList.add('hidden'); // Placeholder for asset viewer
+        downloadLink.innerText = 'Download 3D Model (' + data.format.toUpperCase() + ')';
     }
 
     /**
