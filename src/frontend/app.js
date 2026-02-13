@@ -6,9 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('status-text');
     const resultContainer = document.getElementById('result-container');
     const resultImage = document.getElementById('result-image');
+    const threeViewer = document.getElementById('three-viewer');
     const downloadLink = document.getElementById('download-link');
+    const view3dBtn = document.getElementById('view-3d-btn');
 
     let pollingInterval;
+    let currentSkyboxUrl = '';
+
+    view3dBtn.addEventListener('click', () => {
+        if (currentSkyboxUrl) {
+            resultImage.classList.toggle('hidden');
+            threeViewer.classList.toggle('hidden');
+            threeViewer.src = currentSkyboxUrl;
+            view3dBtn.innerText = threeViewer.classList.contains('hidden') ? 'View in 3D' : 'Back to Image';
+        }
+    });
 
     generateBtn.addEventListener('click', async () => {
         const prompt = promptInput.value.trim();
@@ -74,14 +86,26 @@ document.addEventListener('DOMContentLoaded', () => {
         resultContainer.classList.remove('hidden');
         generateBtn.disabled = false;
         
+        // Reset viewer state
+        threeViewer.classList.add('hidden');
+        resultImage.classList.remove('hidden');
+        view3dBtn.innerText = 'View in 3D';
+
         // Skybox API returns various URLs
         resultImage.src = data.file_url || data.image_url;
         downloadLink.href = data.glb_url || '#';
+        currentSkyboxUrl = data.skybox_url || '';
+
+        if (!currentSkyboxUrl) {
+            view3dBtn.classList.add('hidden');
+        } else {
+            view3dBtn.classList.remove('hidden');
+        }
         
         if (!data.glb_url) {
-            downloadLink.innerText = 'GLB Export not available for this style yet';
+            downloadLink.innerText = 'GLB Export not available';
         } else {
-            downloadLink.innerText = 'Download GLB Environment';
+            downloadLink.innerText = 'Download GLB';
         }
     }
 

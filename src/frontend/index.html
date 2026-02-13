@@ -37,10 +37,14 @@
 
         <div id="result-container" class="hidden">
             <h2>Your Environment is Ready!</h2>
-            <div id="viewer-placeholder">
+            <div id="viewer-container">
                 <img id="result-image" src="" alt="Generated Skybox">
+                <iframe id="three-viewer" class="hidden" src="" frameborder="0"></iframe>
             </div>
-            <a id="download-link" href="#" target="_blank">Download GLB</a>
+            <div class="action-buttons">
+                <a id="download-link" class="btn-secondary" href="#" target="_blank">Download GLB</a>
+                <button id="view-3d-btn" class="btn-secondary">View in 3D</button>
+            </div>
         </div>
     </div>
     <script src="app.js"></script>
