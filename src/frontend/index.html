@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptSpace - AI Metaverse Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PromptSpace</h1>
+        <p>Generate your 3D Metaverse environment using Stacks & AI</p>
+
+        <div class="generator-box">
+            <div class="input-group">
+                <label for="prompt">Environment Prompt</label>
+                <textarea id="prompt" placeholder="Describe your dream virtual world..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="style">Skybox Style</label>
+                <select id="style">
+                    <option value="20">Digital Painting</option>
+                    <option value="5">Realistic</option>
+                    <option value="2">Fantasy Landscape</option>
+                    <option value="9">Cyberpunk</option>
+                </select>
+            </div>
+
+            <button id="generate-btn">Generate Environment</button>
+        </div>
+
+        <div id="status-container" class="hidden">
+            <p id="status-text">Starting generation...</p>
+            <div class="loader"></div>
+        </div>
+
+        <div id="result-container" class="hidden">
+            <h2>Your Environment is Ready!</h2>
+            <div id="viewer-container">
+                <img id="result-image" src="" alt="Generated Skybox">
+                <iframe id="three-viewer" class="hidden" src="" frameborder="0"></iframe>
+            </div>
+            <div class="action-buttons">
+                <a id="download-link" class="btn-secondary" href="#" target="_blank">Download GLB</a>
+                <button id="view-3d-btn" class="btn-secondary">View in 3D</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
