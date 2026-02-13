@@ -113,13 +113,28 @@ document.addEventListener('DOMContentLoaded', () => {
      * Helper to bridge to local PowerShell scripts for this MVP environment
      */
     async function callPowerShell(script, params) {
-        // This is a placeholder for the logic that will be handled by our local runner
-        // In this environment, we will use a JSON-based bridge
-        console.log(`Calling ${script} with`, params);
+        console.log(`Requesting ${script} with`, params);
         
-        // We expect a 'bridge.json' to be updated by a background process
-        // For demonstration, we return a mock success if we were just testing UI
-        // But we will implement the actual bridge in the next commits
-        return { id: "MOCK_ID_" + Date.now(), status: "pending" };
+        // In a production environment with a real backend (Node/Python), 
+        // this would be a real API call.
+        // For this local MVP simulation, we simulate the wait for the bridge.
+        
+        return new Promise((resolve) => {
+            // Simulate the bridge processing time
+            setTimeout(() => {
+                // Mock responses for the purpose of demonstrating the flow
+                if (script === 'New-SkyboxScene.ps1') {
+                    resolve({ id: "REQ_" + Math.random().toString(36).substr(2, 9), status: "pending" });
+                } else if (script === 'Get-SkyboxStatus.ps1') {
+                    // Simulate completion after a few polls
+                    resolve({ 
+                        status: "complete", 
+                        file_url: "https://blockadelabs-skybox-production.s3.amazonaws.com/skybox/uploads/example.jpg",
+                        glb_url: "https://blockadelabs-skybox-production.s3.amazonaws.com/skybox/uploads/example.glb",
+                        skybox_url: "https://blockadelabs.com/view/example"
+                    });
+                }
+            }, 1500);
+        });
     }
 });
