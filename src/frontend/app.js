@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pollingInterval;
     let currentSkyboxUrl = '';
+    let currentAssetUrl = '';
 
     // Tab Switching Logic
     tabWorld.addEventListener('click', () => {
@@ -30,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tabAssets.classList.remove('active');
         worldGenerator.classList.remove('hidden');
         assetGenerator.classList.add('hidden');
+        // Reset results when switching
+        resultContainer.classList.add('hidden');
     });
 
     tabAssets.addEventListener('click', () => {
@@ -37,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tabWorld.classList.remove('active');
         assetGenerator.classList.remove('hidden');
         worldGenerator.classList.add('hidden');
+        // Reset results when switching
+        resultContainer.classList.add('hidden');
     });
 
     view3dBtn.addEventListener('click', () => {
@@ -45,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
             threeViewer.classList.toggle('hidden');
             threeViewer.src = currentSkyboxUrl;
             view3dBtn.innerText = threeViewer.classList.contains('hidden') ? 'View in 3D' : 'Back to Image';
+        } else if (currentAssetUrl) {
+            window.open(`asset-viewer.html?url=${encodeURIComponent(currentAssetUrl)}`, '_blank');
         }
     });
 
@@ -197,13 +204,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset viewer state
         threeViewer.classList.add('hidden');
         resultImage.classList.remove('hidden');
-        view3dBtn.innerText = 'View in 3D Explorer';
+        view3dBtn.innerText = 'Explore 3D Model';
 
         resultImage.src = data.thumbnail_url;
         downloadLink.href = data.file_url;
-        currentSkyboxUrl = ''; // Reset for now
+        currentSkyboxUrl = '';
+        currentAssetUrl = data.file_url;
 
-        view3dBtn.classList.add('hidden'); // Placeholder for asset viewer
+        view3dBtn.classList.remove('hidden'); 
         downloadLink.innerText = 'Download 3D Model (' + data.format.toUpperCase() + ')';
     }
 
