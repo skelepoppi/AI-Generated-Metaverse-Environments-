@@ -29,6 +29,10 @@
     </div>
 
     <script>
+        /**
+         * Parses URL parameters to load the specific 3D model
+         * Expected parameters: url (required), name (optional)
+         */
         const urlParams = new URLSearchParams(window.location.search);
         const modelUrl = urlParams.get('url');
         const modelName = urlParams.get('name') || 'Generated Asset';
