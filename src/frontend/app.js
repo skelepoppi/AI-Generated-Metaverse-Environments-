@@ -10,8 +10,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadLink = document.getElementById('download-link');
     const view3dBtn = document.getElementById('view-3d-btn');
 
+    // Tab Elements
+    const tabWorld = document.getElementById('tab-world');
+    const tabAssets = document.getElementById('tab-assets');
+    const worldGenerator = document.getElementById('world-generator');
+    const assetGenerator = document.getElementById('asset-generator');
+
+    // Asset Generator Elements
+    const generateAssetBtn = document.getElementById('generate-asset-btn');
+    const assetPromptInput = document.getElementById('asset-prompt');
+    const assetModelSelect = document.getElementById('asset-model');
+
     let pollingInterval;
     let currentSkyboxUrl = '';
+    let currentAssetUrl = '';
+
+    // Tab Switching Logic
+    tabWorld.addEventListener('click', () => {
+        tabWorld.classList.add('active');
+        tabAssets.classList.remove('active');
+        worldGenerator.classList.remove('hidden');
+        assetGenerator.classList.add('hidden');
+        // Reset results when switching
+        resultContainer.classList.add('hidden');
+    });
+
+    tabAssets.addEventListener('click', () => {
+        tabAssets.classList.add('active');
+        tabWorld.classList.remove('active');
+        assetGenerator.classList.remove('hidden');
+        worldGenerator.classList.add('hidden');
+        // Reset results when switching
+        resultContainer.classList.add('hidden');
+    });
 
     view3dBtn.addEventListener('click', () => {
         if (currentSkyboxUrl) {
@@ -19,6 +50,47 @@ document.addEventListener('DOMContentLoaded', () => {
             threeViewer.classList.toggle('hidden');
             threeViewer.src = currentSkyboxUrl;
             view3dBtn.innerText = threeViewer.classList.contains('hidden') ? 'View in 3D' : 'Back to Image';
+        } else if (currentAssetUrl) {
+            window.open(`asset-viewer.html?url=${encodeURIComponent(currentAssetUrl)}`, '_blank');
+        }
+    });
+
+    /**
+     * Handles the 3D asset generation lifecycle:
+     * 1. Validate prompt
+     * 2. Initiate request via Bridge/PowerShell
+     * 3. Start polling for results
+     */
+    generateAssetBtn.addEventListener('click', async () => {
+        const prompt = assetPromptInput.value.trim();
+        const model = assetModelSelect.value;
+
+        if (!prompt) {
+            alert('Please enter an object description');
+            return;
+        }
+
+        // Reset UI
+        generateAssetBtn.disabled = true;
+        resultContainer.classList.add('hidden');
+        statusContainer.classList.remove('hidden');
+        statusText.innerText = 'Analyzing prompt for 3D generation...';
+
+        try {
+            const response = await callPowerShell('assets/New-3DObjectRequest.ps1', { Prompt: prompt, Model: model });
+            
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
+            const requestId = response.id;
+            statusText.innerText = 'Generating 3D model (Shap-E/Point-E)...';
+            
+            startAssetPolling(requestId);
+        } catch (err) {
+            alert('Asset Error: ' + err.message);
+            statusContainer.classList.add('hidden');
+            generateAssetBtn.disabled = false;
         }
     });
 
@@ -77,6 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     }
 
+    function startAssetPolling(id) {
+        pollingInterval = setInterval(async () => {
+            try {
+                const response = await callPowerShell('assets/Get-3DObjectStatus.ps1', { Id: id });
+                
+                if (response.status === 'complete') {
+                    stopPolling();
+                    showAssetResult(response);
+                } else if (response.status === 'failed') {
+                    stopPolling();
+                    alert('Asset generation failed.');
+                    statusContainer.classList.add('hidden');
+                    generateAssetBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error('Asset polling error:', err);
+            }
+        }, 5000);
+    }
+
     function stopPolling() {
         clearInterval(pollingInterval);
     }
@@ -107,6 +199,25 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             downloadLink.innerText = 'Download GLB';
         }
+    }
+
+    function showAssetResult(data) {
+        statusContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+        generateAssetBtn.disabled = false;
+        
+        // Reset viewer state
+        threeViewer.classList.add('hidden');
+        resultImage.classList.remove('hidden');
+        view3dBtn.innerText = 'Explore 3D Model';
+
+        resultImage.src = data.thumbnail_url;
+        downloadLink.href = data.file_url;
+        currentSkyboxUrl = '';
+        currentAssetUrl = data.file_url;
+
+        view3dBtn.classList.remove('hidden'); 
+        downloadLink.innerText = 'Download 3D Model (' + data.format.toUpperCase() + ')';
     }
 
     /**

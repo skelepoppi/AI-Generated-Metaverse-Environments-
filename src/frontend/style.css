@@ -26,6 +26,39 @@ h1 {
     margin-bottom: 0.5rem;
 }
 
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+}
+
+.tab-btn {
+    background-color: #334155;
+    color: #94a3b8;
+    border: 1px solid #475569;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background-color: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+}
+
+.generator-box {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 p {
     color: #94a3b8;
     margin-bottom: 2rem;
