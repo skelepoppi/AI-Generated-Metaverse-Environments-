@@ -10,8 +10,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadLink = document.getElementById('download-link');
     const view3dBtn = document.getElementById('view-3d-btn');
 
+    // Tab Elements
+    const tabWorld = document.getElementById('tab-world');
+    const tabAssets = document.getElementById('tab-assets');
+    const worldGenerator = document.getElementById('world-generator');
+    const assetGenerator = document.getElementById('asset-generator');
+
+    // Asset Generator Elements
+    const generateAssetBtn = document.getElementById('generate-asset-btn');
+    const assetPromptInput = document.getElementById('asset-prompt');
+    const assetModelSelect = document.getElementById('asset-model');
+
     let pollingInterval;
     let currentSkyboxUrl = '';
+
+    // Tab Switching Logic
+    tabWorld.addEventListener('click', () => {
+        tabWorld.classList.add('active');
+        tabAssets.classList.remove('active');
+        worldGenerator.classList.remove('hidden');
+        assetGenerator.classList.add('hidden');
+    });
+
+    tabAssets.addEventListener('click', () => {
+        tabAssets.classList.add('active');
+        tabWorld.classList.remove('active');
+        assetGenerator.classList.remove('hidden');
+        worldGenerator.classList.add('hidden');
+    });
 
     view3dBtn.addEventListener('click', () => {
         if (currentSkyboxUrl) {
