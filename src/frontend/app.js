@@ -48,6 +48,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Asset Generation Flow
+    generateAssetBtn.addEventListener('click', async () => {
+        const prompt = assetPromptInput.value.trim();
+        const model = assetModelSelect.value;
+
+        if (!prompt) {
+            alert('Please enter an object description');
+            return;
+        }
+
+        // Reset UI
+        generateAssetBtn.disabled = true;
+        resultContainer.classList.add('hidden');
+        statusContainer.classList.remove('hidden');
+        statusText.innerText = 'Analyzing prompt for 3D generation...';
+
+        try {
+            const response = await callPowerShell('assets/New-3DObjectRequest.ps1', { Prompt: prompt, Model: model });
+            
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
+            const requestId = response.id;
+            statusText.innerText = 'Generating 3D model (Shap-E/Point-E)...';
+            
+            startAssetPolling(requestId);
+        } catch (err) {
+            alert('Asset Error: ' + err.message);
+            statusContainer.classList.add('hidden');
+            generateAssetBtn.disabled = false;
+        }
+    });
+
     generateBtn.addEventListener('click', async () => {
         const prompt = promptInput.value.trim();
         const styleId = styleSelect.value;
